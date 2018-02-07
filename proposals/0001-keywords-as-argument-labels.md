@@ -16,11 +16,15 @@ happens to coincide with a language keyword. For example, consider a
 module-scope function that finds the index of a particular value in a
 collection. A natural name for this would be `indexOf(_:in:)`:
 
-	indexOf(value, in: collection)
+```swift
+indexOf(value, in: collection)
+```
 
 However, because `in` is a keyword, one would actually have to use backticks to escape the `in`, e.g.:
 
-	indexOf(value, `in`: collection)
+```swift
+indexOf(value, `in`: collection)
+```
 
 When defining new APIs in Swift, authors will tend to pick other
 non-keyword words (e.g., `within` for this example), even if they
@@ -28,24 +32,25 @@ aren't ideal. However, this issue also comes up when importing
 Objective-C APIs under the "omit needless words" heuristics, requiring
 escaping to use those APIs. For example:
 
-	event.touchesMatching([.Began, .Moved], `in`: view)
-	NSXPCInterface(`protocol`: SomeProtocolType.Protocol)
-
+```swift
+event.touchesMatching([.Began, .Moved], `in`: view)
+NSXPCInterface(`protocol`: SomeProtocolType.Protocol)
+```
 
 ## Proposed solution
 
 Allow the use of all keywords except `inout`, `var`, and `let` as argument labels. This affects the grammar in three places:
 
-* Call expressions, such as the examples above. Here, we have no grammatic ambiguities, because "<keyword> \`:\`" does not appear in any grammar production within a parenthesized expression list. This is, by far, the most important case.
+* Call expressions, such as the examples above. Here, we have no grammatic ambiguities, because \`:\` does not appear in any grammar production within a parenthesized expression list. This is, by far, the most important case.
 
-* Function/subscript/initializer declarations: aside from the three exclusions above, there is no ambiguity here because the keyword will always be followed by an identifier, ‘:’, or ‘_’. For example:
+* Function/subscript/initializer declarations: aside from the three exclusions above, there is no ambiguity here because the keyword will always be followed by an identifier, \`:\`, or \`_\`. For example:
 
 ```swift
 func touchesMatching(phase: NSTouchPhase, in view: NSView?) -> Set<NSTouch>
 ```
 
   Keywords that introduce or modify a parameter—-currently just
-"inout", "let", and "var"—-will need to retain their former
+`inout`, `let`, and `var`—-will need to retain their former
 meanings. If we invent an API that uses such keywords, they will still
 need to be back-ticked:
 
@@ -53,7 +58,7 @@ need to be back-ticked:
 func addParameter(name: String, `inout`: Bool)
 ```
 
-* Function types: these are actually easier than #2, because the parameter name is always followed by a ‘:’:
+* Function types: these are actually easier than #2, because the parameter name is always followed by a \`:\`:
 
 ```swift
 (NSTouchPhase, in: NSView?) -> Set<NSTouch>
